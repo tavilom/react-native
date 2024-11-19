@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, useRouter } from 'expo-router';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 
@@ -8,12 +9,28 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('');
     const [wrongInput, setWrongInput] = useState(false);
 
-    const handleLogin = () => {
+    // Verificar se o usuário já está autenticado ao iniciar
+    useEffect(() => {
+        const checkAuthentication = async () => {
+            const authenticatedEmail = await AsyncStorage.getItem('emailAutenticado');
+            if (authenticatedEmail) {
+                router.push('/');
+            }
+        };
+        checkAuthentication();
+    }, []);
+
+    const handleLogin = async () => {
         const validEmail = 'admin';
         const validPassword = '123456';
 
         if (email === validEmail && password === validPassword) {
-            router.push({ pathname: '/listagem', params: { email } });
+            try {
+                await AsyncStorage.setItem('emailAutenticado', email);
+                router.push('/');
+            } catch (e) {
+                console.error('Erro ao salvar o email:', e);
+            }
         } else {
             setWrongInput(true);
         }
@@ -50,7 +67,6 @@ export default function LoginScreen() {
 
                 <Link href="/cadastro" style={styles.linkText}>Criar uma conta</Link>
                 <Link href="/" style={styles.linkText}>Ir para a home</Link>
-
             </ScrollView>
         </View>
     );

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
 import { Link } from 'expo-router';
 
-export default function CadastroScreen() {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+export default function CadastroAnimalScreen() {
+    const [nome, setNome] = useState('');
+    const [especie, setEspecie] = useState('');
+    const [raca, setRaca] = useState('');
+    const [idade, setIdade] = useState('');
 
     const showAlert = (title: string, message: string) => {
         if (Platform.OS === 'web') {
@@ -17,77 +17,89 @@ export default function CadastroScreen() {
             Alert.alert(title, message);
         }
     };
+    
 
-    const handleCadastro = () => {
-        const trimmedName = name.trim();
-        const trimmedEmail = email.trim();
-        const trimmedPassword = password.trim();
-        const trimmedConfirmPassword = confirmPassword.trim();
+    const handleCadastro = async () => {
+        if (!nome.trim() || !especie.trim() || !raca.trim() || !idade.trim()) {
+            showAlert('Erro', 'Todos os campos são obrigatórios.');
+            return;
+        }
 
-        // Debugging logs
-        console.log('Trimmed Name:', trimmedName);
-        console.log('Trimmed Email:', trimmedEmail);
-        console.log('Trimmed Password:', trimmedPassword);
-        console.log('Trimmed Confirm Password:', trimmedConfirmPassword);
+        const animalData = {
+            nome: nome.trim(),
+            especie: especie.trim(),
+            raca: raca.trim(),
+            idade: idade.trim(),
+        };
 
-        if (!trimmedName || !trimmedEmail || !trimmedPassword || !trimmedConfirmPassword) {
-            console.log('Erro: Campos vazios.');
-            showAlert('Erro', 'Por favor, verifique os campos.');
-        } else if (trimmedPassword !== trimmedConfirmPassword) {
-            console.log('Erro: Senhas não batem.');
-            showAlert('Erro', 'Senhas não batem.');
-        } else {
-            console.log('Sucesso: Cadastro concluído.');
-            showAlert('Sucesso', 'Cadastro concluído com sucesso!');
+        try {
+            const response = await fetch('http://localhost:3000/animais', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(animalData),
+            });
+
+            if (response.ok) {
+                showAlert('Sucesso', 'Animal cadastrado com sucesso!');
+                setNome('');
+                setEspecie('');
+                setRaca('');
+                setIdade('');
+            } else {
+                const errorText = await response.text();
+                console.error('Erro ao cadastrar animal:', errorText);
+                showAlert('Erro', `Erro ao cadastrar o animal: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('Erro ao cadastrar animal:', error);
+            showAlert('Erro', 'Erro ao cadastrar animal.');
         }
     };
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.title}>Cadastro</Text>
+                <Text style={styles.title}>Cadastro de Animais</Text>
 
                 <TextInput
                     style={styles.input}
                     placeholder="Nome"
                     placeholderTextColor="#DDD"
-                    value={name}
-                    onChangeText={setName}
+                    value={nome}
+                    onChangeText={setNome}
                 />
 
                 <TextInput
                     style={styles.input}
-                    placeholder="E-mail"
+                    placeholder="Espécie"
                     placeholderTextColor="#DDD"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
+                    value={especie}
+                    onChangeText={setEspecie}
                 />
 
                 <TextInput
                     style={styles.input}
-                    placeholder="Senha"
+                    placeholder="Raça"
                     placeholderTextColor="#DDD"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
+                    value={raca}
+                    onChangeText={setRaca}
                 />
 
                 <TextInput
                     style={styles.input}
-                    placeholder="Confirmar Senha"
+                    placeholder="Idade"
                     placeholderTextColor="#DDD"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
+                    value={idade}
+                    onChangeText={setIdade}
+                    keyboardType="numeric"
                 />
 
                 <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-                    <Text style={styles.buttonText}>Cadastrar</Text>
+                    <Text style={styles.buttonText}>Cadastrar Animal</Text>
                 </TouchableOpacity>
 
-                <Link href="/login" style={styles.linkText}>Já tem uma conta? Fazer login</Link>
                 <Link href="/" style={styles.linkText}>Ir para a home</Link>
             </ScrollView>
         </View>

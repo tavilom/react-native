@@ -10,12 +10,12 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Header />
 
-      <ScrollView style={{ maxWidth: 500 }}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Seja bem-vindo à Adote-pet!</Text>
 
         <View style={styles.imageContainer}>
           <Image
-            style={[styles.image, { width: width * 0.4, height: (width * 0.4) * 0.6 }]}
+            style={[styles.image, { width: width * 0.8, height: (width * 0.8) * 0.6 }]}
             source={{ uri: '../assets/images/frase-home.png' }}
             resizeMode="contain"
           />
@@ -34,6 +34,10 @@ export default function HomeScreen() {
             <Text style={styles.buttonText}>Contate-nos</Text>
           </Link>
         </View>
+
+        <Link href="/logout" style={styles.logoutButton}>
+          <Text style={styles.buttonText}>Sair</Text>
+        </Link>
       </ScrollView>
     </View>
   );
@@ -42,11 +46,14 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F0E68C',
-    padding: 20,
+    paddingHorizontal: 20,
+  },
+  scrollContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
   },
   title: {
     marginTop: 16,
@@ -57,9 +64,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF8C00',
     color: '#20232a',
     textAlign: 'center',
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    width: '90%',
   },
   imageContainer: {
     marginBottom: 20,
@@ -72,29 +80,40 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#FFFFF',
+    color: '#20232a',
     marginBottom: 20,
     textAlign: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
+    width: '90%',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    maxWidth: 500,
+    justifyContent: 'space-around',
+    width: '90%',
+    marginBottom: 20,
   },
   button: {
     backgroundColor: '#FF8C00',
-    padding: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
     borderRadius: 10,
     alignItems: 'center',
     textAlign: 'center',
-    marginHorizontal: 10,
     flex: 1,
+    marginHorizontal: 5,
   },
   buttonText: {
     color: '#20232a',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  logoutButton: {
+    backgroundColor: '#FF6347',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    textAlign: 'center',
+    width: '90%',
+    marginTop: 20,
   },
 });

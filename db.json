@@ -1,0 +1,25 @@
+{
+  "animais": [
+    {
+      "id": "0fc2",
+      "nome": "nome",
+      "especie": "tipo",
+      "raca": "amarale",
+      "idade": "12"
+    },
+    {
+      "id": "3d6a",
+      "nome": "Scooby-Doo",
+      "especie": "Cachorro",
+      "raca": "Dogo alemão",
+      "idade": "80"
+    },
+    {
+      "id": "aaf6",
+      "nome": "teste",
+      "especie": "cachorro",
+      "raca": "boxer",
+      "idade": "15"
+    }
+  ]
+}
