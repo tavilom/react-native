@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { Link } from 'expo-router';
 
 export default function ListagemScreen({ route }: { route: any }) {
@@ -9,7 +9,7 @@ export default function ListagemScreen({ route }: { route: any }) {
     useEffect(() => {
         const fetchAnimais = async () => {
             try {
-                const response = await fetch('http://localhost:3000/animais');
+                const response = await fetch('http://localhost:3004/animais');
                 if (response.ok) {
                     const data = await response.json();
                     setAnimais(data);
@@ -38,6 +38,12 @@ export default function ListagemScreen({ route }: { route: any }) {
                     {animais.length > 0 ? (
                         animais.map((animal, index) => (
                             <View key={index} style={styles.animalContainer}>
+                                {animal.foto && (
+                                    <Image
+                                        source={{ uri: animal.foto }} // Assumindo que animal.foto tem a URL da imagem
+                                        style={styles.animalImage}
+                                    />
+                                )}
                                 <Text style={styles.animalText}>Nome: {animal.nome}</Text>
                                 <Text style={styles.animalText}>Espécie: {animal.especie}</Text>
                                 <Text style={styles.animalText}>Raça: {animal.raca}</Text>
@@ -87,6 +93,13 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         width: '100%',
         maxWidth: 500,
+        alignItems: 'center', // Certifique-se de que a imagem e o texto fiquem alinhados
+    },
+    animalImage: {
+        width: 100, // Ajuste o tamanho da imagem conforme necessário
+        height: 100,
+        borderRadius: 10,
+        marginBottom: 10, // Dê um espaçamento entre a imagem e o texto
     },
     animalText: {
         fontSize: 16,

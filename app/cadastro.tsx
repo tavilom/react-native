@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Platform, Alert, Image } from 'react-native';
 import { Link } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';  // Importando o ImagePicker
 
 export default function CadastroAnimalScreen() {
     const [nome, setNome] = useState('');
     const [especie, setEspecie] = useState('');
     const [raca, setRaca] = useState('');
     const [idade, setIdade] = useState('');
+    const [imageUri, setImageUri] = useState<string | null>(null);  // Para armazenar a URI da imagem
 
     const showAlert = (title: string, message: string) => {
         if (Platform.OS === 'web') {
@@ -17,7 +19,27 @@ export default function CadastroAnimalScreen() {
             Alert.alert(title, message);
         }
     };
-    
+
+    const handleImagePick = async () => {
+        // Solicitar permissões para acessar as imagens
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            showAlert('Permissão negada', 'Você precisa permitir o acesso à galeria.');
+            return;
+        }
+
+        // Abrir a galeria de imagens
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setImageUri(result.assets[0].uri);  // Armazenar URI da imagem
+        }
+    };
 
     const handleCadastro = async () => {
         if (!nome.trim() || !especie.trim() || !raca.trim() || !idade.trim()) {
@@ -30,10 +52,11 @@ export default function CadastroAnimalScreen() {
             especie: especie.trim(),
             raca: raca.trim(),
             idade: idade.trim(),
+            foto: imageUri,  // Incluindo a URL da imagem no envio
         };
 
         try {
-            const response = await fetch('http://localhost:3000/animais', {
+            const response = await fetch('http://localhost:3004/animais', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,6 +70,7 @@ export default function CadastroAnimalScreen() {
                 setEspecie('');
                 setRaca('');
                 setIdade('');
+                setImageUri(null);  // Limpar a imagem após cadastro
             } else {
                 const errorText = await response.text();
                 console.error('Erro ao cadastrar animal:', errorText);
@@ -95,6 +119,16 @@ export default function CadastroAnimalScreen() {
                     onChangeText={setIdade}
                     keyboardType="numeric"
                 />
+
+                {/* Botão para selecionar a imagem */}
+                <TouchableOpacity style={styles.button} onPress={handleImagePick}>
+                    <Text style={styles.buttonText}>
+                        {imageUri ? 'Imagem selecionada' : 'Escolher Imagem'}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Exibir a imagem escolhida */}
+                {imageUri && <Image source={{ uri: imageUri }} style={styles.imagePreview} />}
 
                 <TouchableOpacity style={styles.button} onPress={handleCadastro}>
                     <Text style={styles.buttonText}>Cadastrar Animal</Text>
@@ -155,5 +189,11 @@ const styles = StyleSheet.create({
         marginTop: 20,
         textDecorationLine: 'underline',
         fontSize: 16,
+    },
+    imagePreview: {
+        width: 200,
+        height: 200,
+        marginTop: 20,
+        borderRadius: 10,
     },
 });
